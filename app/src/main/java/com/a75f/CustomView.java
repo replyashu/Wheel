@@ -1,21 +1,14 @@
 package com.a75f;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
-import android.util.Log;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
 
 /**
  * Created by apple on 21/03/17.
@@ -24,6 +17,7 @@ import android.widget.ImageView;
 public class CustomView extends View{
 
     int setVal = 75;
+    int coverAngle = 40;
     float initX = 0;
     int color = Color.rgb(0,0,255);
     Point center;
@@ -38,7 +32,6 @@ public class CustomView extends View{
         super.onDraw(canvas);
         center = new Point(canvas.getWidth()/2 , canvas.getHeight());
         drawWheel(canvas);
-        drawZebras(canvas);
         drawOuterRim(canvas);
         drawVal(canvas);
 
@@ -71,6 +64,7 @@ public class CustomView extends View{
                     fill1);
         }
 
+
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
         paint.setStrokeWidth(1);
@@ -97,17 +91,23 @@ public class CustomView extends View{
     private void drawOuterRim(Canvas canvas){
         int inner_radius = canvas.getWidth()/2 + 170;
         int outer_radius = canvas.getWidth()/2 + 190;
-        int arc_sweep = -180;
-        int arc_ofset = 0;
 
         RectF outer_rect = new RectF(center.x-outer_radius, center.y-outer_radius, center.x+outer_radius, center.y+outer_radius);
-        RectF inner_rect = new RectF(center.x-inner_radius, center.y-inner_radius, center.x+inner_radius, center.y+inner_radius);
-
         Path path = new Path();
-        path.arcTo(outer_rect, arc_ofset, arc_sweep);
-        path.arcTo(inner_rect, arc_ofset + arc_sweep, -arc_sweep);
 
         Paint fill = new Paint();
+
+        path.arcTo(outer_rect, -180, coverAngle);
+
+        fill.setColor(color);
+        fill.setStyle(Paint.Style.FILL);
+        fill.setStrokeWidth(2f);
+        canvas.drawPath(path, fill);
+
+        drawZebras(canvas);
+
+        path.arcTo(outer_rect, -180, 180);
+
         fill.setColor(color);
         fill.setStyle(Paint.Style.STROKE);
         fill.setStrokeWidth(2f);
@@ -133,27 +133,53 @@ public class CustomView extends View{
         }
         float h2 = getHeight();
 
-        if(action == MotionEvent.ACTION_MOVE){
+        if(action == MotionEvent.ACTION_DOWN){
+
             float nextX = event.getX();
 
-            if(nextX < initX && event.getY() <= h2 - 200){
-                if(setVal > 50) {
-                    setVal--;
-                }
+            if(event.getY() <= h2 - 200){
+                float val = event.getX();
+                if(setVal >= 50 && setVal <= 100){
+                    setVal = 50  + (int)(val * 50 / (getWidth() - 25));
 
-            }
-            else if(nextX > initX && event.getY() <= h2 - 200){
-                if(setVal < 100) {
-                    setVal++;
-                }
+                    coverAngle = 40 + (2 * (setVal - 50));
 
+                }
             }
+
             if(setVal <= 75)
-                color = Color.rgb(0, 0, 255 - ((setVal - 50) * 5));
+                color = Color.rgb(0, 0, 255 - (setVal - 50));
             else
-                color = Color.rgb(255- ((100 - setVal) * 5), 0, 0);
+                color = Color.rgb(255- ((100 - setVal)), 0, 0);
             initX = nextX;
             invalidate();
+        }
+
+        /**
+         * Stopping swiping temperature control
+         */
+
+        if(action == MotionEvent.ACTION_MOVE){
+//            float nextX = event.getX();
+//
+//            if(nextX < initX && event.getY() <= h2 - 200){
+//                if(setVal > 50) {
+//                    setVal--;
+//                }
+//
+//            }
+//            else if(nextX > initX && event.getY() <= h2 - 200){
+//                if(setVal < 100) {
+//                    setVal++;
+//                }
+//
+//            }
+//            if(setVal <= 75)
+//                color = Color.rgb(0, 0, 255 - ((setVal - 50) * 5));
+//            else
+//                color = Color.rgb(255- ((100 - setVal) * 5), 0, 0);
+//            initX = nextX;
+//            invalidate();
         }
         return true;
     }
