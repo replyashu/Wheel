@@ -21,6 +21,7 @@ public class CustomView extends View{
     float initX = 0;
     int color = Color.rgb(0,0,255);
     Point center;
+    int caliberation = 5;
 
 
     public CustomView(Context context) {
@@ -162,13 +163,13 @@ public class CustomView extends View{
         if(action == MotionEvent.ACTION_MOVE){
             float nextX = event.getX();
 
-            if(nextX < initX && event.getY() <= h2 - 200){
+            if(nextX < initX + caliberation && event.getY() <= h2 - 200){
                 if(setVal > 50) {
                     setVal--;
                 }
 
             }
-            else if(nextX > initX && event.getY() <= h2 - 200){
+            else if(nextX > initX + caliberation && event.getY() <= h2 - 200){
                 if(setVal < 100) {
                     setVal++;
                 }
