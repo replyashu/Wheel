@@ -160,26 +160,28 @@ public class CustomView extends View{
          */
 
         if(action == MotionEvent.ACTION_MOVE){
-//            float nextX = event.getX();
-//
-//            if(nextX < initX && event.getY() <= h2 - 200){
-//                if(setVal > 50) {
-//                    setVal--;
-//                }
-//
-//            }
-//            else if(nextX > initX && event.getY() <= h2 - 200){
-//                if(setVal < 100) {
-//                    setVal++;
-//                }
-//
-//            }
-//            if(setVal <= 75)
-//                color = Color.rgb(0, 0, 255 - ((setVal - 50) * 5));
-//            else
-//                color = Color.rgb(255- ((100 - setVal) * 5), 0, 0);
-//            initX = nextX;
-//            invalidate();
+            float nextX = event.getX();
+
+            if(nextX < initX && event.getY() <= h2 - 200){
+                if(setVal > 50) {
+                    setVal--;
+                }
+
+            }
+            else if(nextX > initX && event.getY() <= h2 - 200){
+                if(setVal < 100) {
+                    setVal++;
+                }
+
+            }
+
+            coverAngle = 40 + (2 * (setVal - 50));
+            if(setVal <= 75)
+                color = Color.rgb(0, 0, 255 - ((setVal - 50) * 5));
+            else
+                color = Color.rgb(255- ((100 - setVal) * 5), 0, 0);
+            initX = nextX;
+            invalidate();
         }
         return true;
     }
